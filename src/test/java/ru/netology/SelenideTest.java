@@ -25,14 +25,14 @@ public class SelenideTest {
         $("[data-test-id='order-success']").shouldHave(exactText("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время."));
     }
 
-  @Test
+    @Test
     void errorExpectedWhenEmptyFieldName() {
         open("http://localhost:9999");
         $("[type='text']").setValue("");
         $("[type='tel']").setValue("+79882223345");
         $("[class='checkbox__box']").click();
         $("[type='button']").click();
-        $("[class=input__sub]").shouldHave
+        $("[data-test-id=name].input_invalid .input__sub").shouldHave
                 (exactTextCaseSensitive("Поле обязательно для заполнения"));
     }
 
@@ -43,8 +43,19 @@ public class SelenideTest {
         $("[type='tel']").setValue("+79882223345");
         $("[class='checkbox__box']").click();
         $("[type='button']").click();
-        $("[class='input__sub']").shouldHave
+        $("[data-test-id=name].input_invalid .input__sub").shouldHave
                 (exactTextCaseSensitive("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+    }
+
+    @Test
+    void errorExpectedWhenInputIncorrectTelNumber() {
+        open("http://localhost:9999");
+        $("[type='text']").setValue("Иванов Николай");
+        $("[type='tel']").setValue("+7 988 222 33 45");
+        $("[class='checkbox__box']").click();
+        $("[type='button']").click();
+        $("[data-test-id=phone].input_invalid .input__sub").shouldHave
+                (exactTextCaseSensitive("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
     }
 
     @Test
@@ -54,8 +65,9 @@ public class SelenideTest {
         $("[type='tel']").setValue("+79882223345");
 //        $("[class='checkbox__box']").click();
         $("[type='button']").click();
-        String colorLine=$("[class='input__sub']").getCssValue("color");
-        assertEquals("rgba(11, 31, 53, 0.6)",colorLine);
+        $("[data-test-id=agreement].input_invalid").shouldHave
+                (exactTextCaseSensitive("Я соглашаюсь с условиями обработки и использования моих " +
+                        "персональных данных и разрешаю сделать запрос в бюро кредитных историй"));
     }
 
 }
